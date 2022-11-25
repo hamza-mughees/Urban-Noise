@@ -1,28 +1,23 @@
 import React from 'react'
+import { getMonitors, getMonitorReadings } from './apiReqs.js'
 
 function App() {
-  var headers = new Headers()
-  headers.append('Content-Type', 'applications/json')
-
-  var body = JSON.stringify({
-    'username': 'dublincityapi',
-    'password': 'Xpa5vAQ9ki'
-  })
-
-  var requestOptions = {
-    method: 'POST',
-    headers: headers,
-    body: body,
-    redirect: 'follow'
-  }
-
-  fetch('https://data.smartdublin.ie/sonitus-api/api/monitors', requestOptions)
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
+  getMonitors()
+    .then((monitors) => {
+      monitors.forEach((m) => {
+        if (m.label.split(' ')[0] === 'Noise')
+          getMonitorReadings(m.serial_number)
+            .then((readings) => {
+              var dbs = []
+              readings.forEach((r) => {
+                dbs.push(r.laeq)
+              })
+              console.log(dbs)
+            })
+      })
     })
 
-  return <div>Hello World!</div>
+  return <div></div>
 }
 
 export default App;
