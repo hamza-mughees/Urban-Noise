@@ -1,23 +1,14 @@
 import React from 'react'
-import { getMonitors, getMonitorReadings } from './apiReqs.js'
+import { getAllLeaq } from './apiReqs.js'
+// import { LineChart } from 'recharts'
 
 function App() {
-  getMonitors()
-    .then((monitors) => {
-      monitors.forEach((m) => {
-        if (m.label.split(' ')[0] === 'Noise')
-          getMonitorReadings(m.serial_number)
-            .then((readings) => {
-              var dbs = []
-              readings.forEach((r) => {
-                dbs.push(r.laeq)
-              })
-              console.log(dbs)
-            })
-      })
+  getAllLeaq()
+    .then((data) => {
+      console.log(data)
     })
-
-  return <div></div>
+  
+  return <div className="App">Hello Chart</div>
 }
 
 export default App;

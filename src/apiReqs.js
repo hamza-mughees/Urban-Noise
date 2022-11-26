@@ -14,16 +14,10 @@ export async function getMonitors() {
     redirect: 'follow'
   }
 
-  const monitors = await fetch('https://data.smartdublin.ie/sonitus-api/api/monitors', requestOptions)
-    .then((response) => response.json())
-    .then((data) => {
-      return data
-    })
-  
-  return monitors
+  return await (await fetch('https://data.smartdublin.ie/sonitus-api/api/monitors', requestOptions)).json()
 }
 
-export async function getMonitorReadings(serial_number) {
+export async function getMonitorData(serial_number) {
   var requestOptions = {
     method: 'POST',
     headers: headers,
@@ -36,11 +30,30 @@ export async function getMonitorReadings(serial_number) {
     redirect: 'follow'
   }
 
-  const readings = await fetch('https://data.smartdublin.ie/sonitus-api/api/data', requestOptions)
-    .then((response) => response.json())
-    .then((data) => {
-      return data
-    })
-  
-  return readings
+  return await (await fetch('https://data.smartdublin.ie/sonitus-api/api/data', requestOptions)).json()
+}
+
+export async function getAllLeaq() {
+  var monitors = await getMonitors()
+  var allLaeq = []
+
+  monitors.forEach(async (m) => {
+    if (m.label.split(' ')[0] === 'Noise') {
+      var monitorData = await getMonitorData(m.serial_number)
+      var monitorLaeq = []
+      monitorData.forEach((r) => {
+        monitorLaeq.push({
+          datetime: r.datetime,
+          laeq: r.laeq,
+        })
+      })
+      allLaeq.push({
+        serial_number: m.serial_number,
+        label: m.label,
+        laeq: monitorLaeq
+      })
+    }
+  })
+
+  return allLaeq
 }
