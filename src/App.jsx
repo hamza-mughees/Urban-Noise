@@ -3,14 +3,14 @@ import { getAllLaeq } from "./utils/apiReqs.js";
 // import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 const App = () => {
-  const [laeq, setLaeq] = useState({})
+  const [laeq, setLaeq] = useState({});
 
   useEffect(() => {
     (async () => {
-      const res = await getAllLaeq()
-      setLaeq(res)
-    })()
-  }, [])
+      const res = await getAllLaeq();
+      setLaeq(res);
+    })();
+  }, []);
 
   return <div className="App">Hello world</div>;
 

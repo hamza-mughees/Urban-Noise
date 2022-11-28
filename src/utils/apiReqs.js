@@ -39,9 +39,9 @@ export const getAllLaeq = async () => {
 
   const promises = monitors.map(async (m) => {
     if (m.label.split(" ")[0] !== "Noise" || m.location === "In Office") {
-      return
+      return;
     }
-    
+
     await getMonitorData(m.serial_number).then((monitorData) => {
       var monitorLaeq = monitorData.map((r) => ({
         datetime: r.datetime,
