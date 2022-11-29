@@ -33,9 +33,9 @@ export const getMonitorData = async (serial_number) =>
     })
   ).json();
 
-export const getAllLaeq = async () => {
+export const getData = async () => {
   var monitors = await getMonitors();
-  var allLaeq = {};
+  var data = {};
 
   const promises = monitors.map(async (m) => {
     if (m.label.split(" ")[0] !== "Noise" || m.location === "In Office") {
@@ -43,18 +43,18 @@ export const getAllLaeq = async () => {
     }
 
     await getMonitorData(m.serial_number).then((monitorData) => {
-      var monitorLaeq = monitorData.map((r) => ({
+      var monitorReadings = monitorData.map((r) => ({
         datetime: r.datetime,
         laeq: r.laeq,
       }));
 
-      allLaeq[m.serial_number] = {
+      data[m.serial_number] = {
         label: m.label,
-        laeq: monitorLaeq,
+        data: monitorReadings,
       };
     });
   });
   await Promise.all(promises);
 
-  return allLaeq;
+  return data;
 };
