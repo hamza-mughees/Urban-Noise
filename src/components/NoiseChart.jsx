@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
+  // AreaChart,
+  // Area,
   LineChart,
   Line,
+  // ReferenceLine,
+  ReferenceArea,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -21,12 +25,39 @@ const NoiseChart = (props) => {
     });
   }, []);
 
+  const getL1s = (data) => {
+    var l1 = [];
+    var x1 = undefined;
+    var x2 = undefined;
+
+    data.forEach((reading) => {
+      if (reading.laeq >= 50) {
+        if (x1 === undefined) {
+          x1 = reading.datetime;
+          x2 = reading.datetime;
+        } else {
+          x2 = reading.datetime;
+        }
+      } else {
+        if (x1 !== undefined) {
+          l1.push([x1, x2]);
+          x1 = undefined;
+          x2 = undefined;
+        }
+      }
+    });
+
+    return l1;
+  };
+
+  const l1s = getL1s(props.monitorData.data);
+
   return (
     <ResponsiveContainer minWidth={chartWidth} minHeight={chartHeight}>
       <LineChart
         // width={window.innerWidth}
         // height={window.innerHeight}
-        data={props.noiseData}
+        data={props.monitorData.data}
         margin={{
           top: 50,
           right: 50,
@@ -46,6 +77,13 @@ const NoiseChart = (props) => {
           activeDot={{ r: 8 }}
           dot={false}
         />
+        {/* <ReferenceLine y={50} label={{
+          position: "right",
+          value: "sample"
+        }}></ReferenceLine> */}
+        {l1s.map((region) => {
+          return <ReferenceArea x1={region[0]} x2={region[1]}></ReferenceArea>;
+        })}
       </LineChart>
     </ResponsiveContainer>
   );
