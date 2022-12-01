@@ -43,10 +43,23 @@ export const getData = async () => {
     }
 
     await getMonitorData(m.serial_number).then((monitorData) => {
-      var monitorReadings = monitorData.map((r) => ({
-        datetime: r.datetime,
-        laeq: r.laeq,
-      }));
+      var monitorReadings = monitorData.map((r) => {
+        const [dateValues, timeValues] = r.datetime.split(" ");
+        const [year, month, day] = dateValues.split("-");
+        const [hours, minutes, seconds] = timeValues.split(":");
+
+        return {
+          datetime: new Date(
+            +year,
+            +month - 1,
+            +day,
+            +hours,
+            +minutes,
+            +seconds
+          ).getTime(),
+          laeq: r.laeq,
+        };
+      });
 
       data[m.serial_number] = {
         label: m.label,

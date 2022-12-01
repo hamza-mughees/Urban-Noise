@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import moment from "moment";
 import {
   // AreaChart,
   // Area,
@@ -10,7 +11,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
+  // Legend,
   ResponsiveContainer,
 } from "recharts";
 
@@ -25,13 +26,13 @@ const NoiseChart = (props) => {
     });
   }, []);
 
-  const getL1s = (data) => {
-    var l1 = [];
+  const getAreas = (data, lower, upper) => {
+    var areas = [];
     var x1 = undefined;
     var x2 = undefined;
 
     data.forEach((reading) => {
-      if (reading.laeq >= 50) {
+      if (reading.laeq >= lower && reading.laeq <= upper) {
         if (x1 === undefined) {
           x1 = reading.datetime;
           x2 = reading.datetime;
@@ -40,17 +41,21 @@ const NoiseChart = (props) => {
         }
       } else {
         if (x1 !== undefined) {
-          l1.push([x1, x2]);
+          areas.push([x1, x2]);
           x1 = undefined;
           x2 = undefined;
         }
       }
     });
 
-    return l1;
+    return areas;
   };
 
-  const l1s = getL1s(props.monitorData.data);
+  const l1 = {
+    areas: getAreas(props.monitorData.data, 0, 50),
+    colour: "green",
+    text: undefined,
+  };
 
   return (
     <ResponsiveContainer minWidth={chartWidth} minHeight={chartHeight}>
@@ -65,11 +70,17 @@ const NoiseChart = (props) => {
           bottom: 0,
         }}
       >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="datetime" />
+        <CartesianGrid horizontal="true" vertical="" />
+        <XAxis
+          dataKey="datetime"
+          tickFormatter={(unixTime) => moment(unixTime).format("HH:mm Do")}
+          domain={["auto", "auto"]}
+          type="number"
+          tickCount={10}
+        />
         <YAxis />
         <Tooltip />
-        <Legend />
+        {/* <Legend /> */}
         <Line
           type="monotone"
           dataKey="laeq"
@@ -81,8 +92,15 @@ const NoiseChart = (props) => {
           position: "right",
           value: "sample"
         }}></ReferenceLine> */}
-        {l1s.map((region) => {
-          return <ReferenceArea x1={region[0]} x2={region[1]}></ReferenceArea>;
+        {l1.areas.map((region, index) => {
+          return (
+            <ReferenceArea
+              key={index}
+              x1={region[0]}
+              x2={region[1]}
+              fill={l1.colour}
+            ></ReferenceArea>
+          );
         })}
       </LineChart>
     </ResponsiveContainer>
