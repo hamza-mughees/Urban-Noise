@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getData } from "./utils/apiReqs.js";
+import { getData } from "./utils/apiReqs";
 import NoiseChart from "./components/NoiseChart.jsx";
 import InfoBox from "./components/InfoBox";
 
@@ -21,8 +21,9 @@ const App = () => {
     (async () => {
       const currentTime = Math.floor(Date.now() / 1000);
       const oneDayAgo = currentTime - 86400;
+      const oneWeekAgo = currentTime - 604800;
 
-      setData(await getData(oneDayAgo, currentTime));
+      setData(await getData(oneWeekAgo, currentTime));
       setDataLoaded(true);
     })();
   }, []);
