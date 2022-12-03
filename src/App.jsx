@@ -22,8 +22,9 @@ const App = () => {
       const currentTime = Math.floor(Date.now() / 1000);
       const oneDayAgo = currentTime - 86400;
       const oneWeekAgo = currentTime - 604800;
+      const twoDaysAgo = currentTime - (2*86400)
 
-      setData(await getData(oneWeekAgo, currentTime));
+      setData(await getData(twoDaysAgo, currentTime));
       setDataLoaded(true);
     })();
   }, []);
