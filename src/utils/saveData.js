@@ -1,7 +1,14 @@
 import firebase from "./firebase";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  deleteDoc,
+  addDoc,
+} from "firebase/firestore";
 
-const db = firebase.firestore();
+const db = getFirestore(firebase);
 
 var headers = new Headers();
 headers.append("Content-Type", "application/json");
@@ -17,15 +24,8 @@ var body = {
   password: "Xpa5vAQ9ki",
 };
 
-export const saveMonitors = () => {
-  collection(db, "monitors")
-    .get()
-    .toPromise()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        doc.ref.delete();
-      });
-    });
+export const saveMonitors = async () => {
+  await deleteCollection(db, "monitors");
 
   fetch("https://data.smartdublin.ie/sonitus-api/api/monitors", {
     ...requestOptions,
@@ -33,48 +33,39 @@ export const saveMonitors = () => {
   })
     .then((res) => res.json())
     .then((res) => {
-      for (let i = 0; i < res.length; i++) {
-        let item = res[i];
-
+      res.forEach(async (item) => {
         try {
-          addItem(item, db, "monitors");
+          const monitorsRef = collection(db, "monitors");
+          await addDoc(monitorsRef, item);
         } catch (e) {
           console.log(e);
         }
-      }
+      });
     });
 };
 
-export const saveMonitorData = (serial_number, start, end) => {
-  collection(db, serial_number)
-    .get()
-    .toPromise()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        doc.ref.delete();
-      });
-    });
+export const saveMonitorData = async (serial_number, start, end) => {
+  await deleteCollection(db, serial_number);
 
   fetch("https://data.smartdublin.ie/sonitus-api/api/data", {
     ...requestOptions,
     body: JSON.stringify({
       ...body,
       monitor: serial_number,
-      start: start, //"1668800000",
-      end: end, //"1669331670",
+      start: start,
+      end: end,
     }),
   })
     .then((res) => res.json())
     .then((res) => {
-      for (let i = 0; i < res.length; i++) {
-        let item = res[i];
-
+      res.forEach(async (item) => {
         try {
-          addItem(item, db, serial_number);
+          const serialRef = collection(db, serial_number);
+          await addDoc(serialRef, item);
         } catch (e) {
           console.log(e);
         }
-      }
+      });
     });
 };
 
@@ -91,7 +82,7 @@ export const getMonitorData = async (serial_number) => {
 };
 
 export const saveData = async (start, end) => {
-  saveMonitors();
+  await saveMonitors();
 
   let monitors = await getMonitors();
 
@@ -116,7 +107,6 @@ export const getData = async (start, end) => {
     const monitorData = (await getDocs(serialCollRef)).docs.map((doc) => ({
       ...doc.data(),
     }));
-    // data.push(monitorData.docs.map((doc) => ({...doc.data()})))
 
     var monitorReadings = monitorData.map((r) => {
       const [dateValues, timeValues] = r.datetime.split(" ");
@@ -147,11 +137,13 @@ export const getData = async (start, end) => {
   return data;
 };
 
-const addItem = (item, db, collectionName) => {
-  console.log(item, collectionName);
-  return db
-    .collection(collectionName)
-    .add(Object.assign({}, item))
-    .then(() => true)
-    .catch((e) => console.log(e));
+const deleteCollection = async (db, collectionName) => {
+  const querySnapshot = await getDocs(query(collection(db, collectionName)));
+
+  const promises = [];
+  querySnapshot.forEach((doc) => {
+    promises.push(deleteDoc(doc.ref));
+  });
+
+  await Promise.all(promises);
 };

@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import {
-  // AreaChart,
-  // Area,
   LineChart,
   Line,
-  // ReferenceLine,
   ReferenceArea,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  // Legend,
   ResponsiveContainer,
 } from "recharts";
 
@@ -107,8 +103,6 @@ const NoiseChart = (props) => {
     <div>
       <ResponsiveContainer minWidth={chartWidth} minHeight={chartHeight}>
         <LineChart
-          // width={window.innerWidth}
-          // height={window.innerHeight}
           data={props.monitorData.data}
           margin={{
             top: 50,
@@ -127,7 +121,6 @@ const NoiseChart = (props) => {
           />
           <YAxis />
           <Tooltip content={<CustomTooltip />} />
-          {/* <Legend /> */}
           <Line
             type="monotone"
             dataKey="laeq"
@@ -135,10 +128,6 @@ const NoiseChart = (props) => {
             activeDot={{ r: 8 }}
             dot={false}
           />
-          {/* <ReferenceLine y={50} label={{
-          position: "right",
-          value: "sample"
-        }}></ReferenceLine> */}
           {l1.areas.map((region, index) => {
             return (
               <ReferenceArea

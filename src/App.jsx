@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+// import { getData } from "./utils/apiReqs";
 import { getData } from "./utils/apiReqs";
 import NoiseChart from "./components/NoiseChart.jsx";
 import InfoBox from "./components/InfoBox";
