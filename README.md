@@ -1,3 +1,55 @@
+# Urban Noise
+
+This application is an Urban Noise Visualization of Dublin noise data. The application performs the following operations:
+
+1. Noise data is obtained from the [Sonitus Api](https://data.smartdublin.ie/sonitus-api).
+2. This data is stored inside a Firebase Firestored, and retrieved [Optional].
+3. The data for each monitor is graphed on a line chart.
+4. The line charts are colour coded for different thresholds.
+5. The health implications for each threshold are outlined within expandable information boxes.
+
+## Run the App
+
+To get started with Create React App, click [here](#Getting-Started-with-Create-React-App) to access the relavant portion of this document. 
+
+Clone this project with the following command.
+
+```
+git clone https://github.com/hamza-mughees/Urban-Noise.git
+```
+
+Run the following commands to install the relevant packages and start the application.
+
+```
+npm install
+npm start
+```
+
+Initially, this application will obtain data from the API and visualize it directly. However, if you wish to save this data to Firebase first, you must do the following first:
+
+1. Create a new file in the `src/utils` directory, called `firebase.js`.
+2. Add the following code to this file:
+```javascript
+import "firebase/compat/firestore";
+import { initializeApp } from 'firebase/app'
+
+const firebaseConfig = {
+  apiKey: "<api key>",
+  authDomain: "<auth domain>",
+  projectId: "<project id>",
+  storageBucket: "<storage bucket>",
+  messagingSenderId: "<messaging sender id>",
+  appId: "<app id>",
+          
+};
+
+export default initializeApp(firebaseConfig);
+```
+3. Create a Firebase Firestore and replace the fields of the `firebaseConfig` object with the relevant details.
+4. Go into the `src/App.jsx` file, comment out line 7 and uncomment line 6.
+
+The above steps should now allow the application to save and retrieve data from Firebase.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-// import { getData } from "./utils/apiReqs";
-import { getData } from "./utils/apiReqs";
 import NoiseChart from "./components/NoiseChart.jsx";
 import InfoBox from "./components/InfoBox";
+
+//{ First import for Firebase, second import for direct API access
+// import { getData } from "./utils/saveData";
+import { getData } from "./utils/apiReqs";
+//}
 
 const App = () => {
   const [data, setData] = useState({});
@@ -23,7 +26,7 @@ const App = () => {
       const currentTime = Math.floor(Date.now() / 1000);
       const oneDayAgo = currentTime - 86400;
       const oneWeekAgo = currentTime - 604800;
-      const twoDaysAgo = currentTime - (2*86400)
+      const twoDaysAgo = currentTime - 2 * 86400;
 
       setData(await getData(twoDaysAgo, currentTime));
       setDataLoaded(true);
